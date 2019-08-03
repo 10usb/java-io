@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
@@ -115,12 +116,12 @@ public class BinaryWriter implements Closeable {
 	}
 	
 	public void writeDouble(double value) throws IOException {
-		ByteBuffer.wrap(buffer).putDouble(value);
+		ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).putDouble(value);
 		output.write(buffer, 0, 8);
 	}
 	
 	public void writeFloat(float value) throws IOException {
-		ByteBuffer.wrap(buffer).putFloat(value);
+		ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).putFloat(value);
 		output.write(buffer, 0, 4);
 	}
 	

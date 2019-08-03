@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
 public class BinaryReader implements Closeable {
@@ -63,7 +64,7 @@ public class BinaryReader implements Closeable {
 		int total = 0;
 		do {
 			int read = input.read(value, total, length - total);
-			if (read < 0) throw new IOException("Failed to read needed amount of bytes");
+			if (read <= 0) throw new IOException("Failed to read needed amount of bytes");
 			total += read;
 		} while (total < length);
 	}
@@ -106,7 +107,7 @@ public class BinaryReader implements Closeable {
 	}
 	
 	public long readInt(int length) throws IOException {
-		input.read(buffer, 0, length);
+		read(buffer, 0, length);
 		long value = 0;
 		for (int index = 0; index < length; index++) {
 			value |= (buffer[index] & 0xffl) << (index * 8);
@@ -115,26 +116,26 @@ public class BinaryReader implements Closeable {
 	}
 	
 	public double readDouble() throws IOException {
-		input.read(buffer, 0, 8);
-		return ByteBuffer.wrap(buffer).getDouble();
+		read(buffer, 0, 8);
+		return ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getDouble();
 		
 	}
 	
 	public float readFloat() throws IOException {
-		input.read(buffer, 0, 8);
-		return ByteBuffer.wrap(buffer).getFloat();
+		read(buffer, 0, 8);
+		return ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getFloat();
 	}
 	
 	public String readString(int length) throws IOException {
 		byte[] buffer = new byte[length];
-		input.read(buffer, 0, length);
+		read(buffer, 0, length);
 		
 		return new String(buffer, charset);
 	}
 	
 	public char[] readChars(int length) throws IOException {
 		byte[] buffer = new byte[length];
-		input.read(buffer, 0, length);
+		read(buffer, 0, length);
 		
 		return ByteBuffer.wrap(buffer).asCharBuffer().array().clone();
 	}
